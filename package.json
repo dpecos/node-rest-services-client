@@ -1,6 +1,6 @@
 {
   "name": "node-rest-services-client",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Node REST API consumer",
   "main": "index.js",
   "scripts": {

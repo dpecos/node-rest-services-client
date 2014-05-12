@@ -33,9 +33,7 @@ get = (service, url_params) ->
 
   deferred.promise
 
-post = (service, url_params, data) ->
-  deferred = Q.defer()
-
+build_jsonRequest = (service, url_params, data) ->
   request_conf =
     uri: buildServiceURL(service, url_params)
     headers:
@@ -43,7 +41,29 @@ post = (service, url_params, data) ->
     body: JSON.stringify(data)
   request_conf['auth'] = endpoint.auth if endpoint.auth
 
+  request_conf
+
+post = (service, url_params, data) ->
+  deferred = Q.defer()
+
+  request_conf = build_jsonRequest service, url_params, data
+
   request.post request_conf, (err, response, body) ->
+    if err
+      deferred.reject err
+    else if response.statusCode isnt 200
+      deferred.reject "HTTP Response code #{response.statusCode}"
+    else
+      deferred.resolve body
+
+  deferred.promise
+
+put = (service, url_params, data) ->
+  deferred = Q.defer()
+
+  request_conf = build_jsonRequest service, url_params, data
+
+  request.put request_conf, (err, response, body) ->
     if err
       deferred.reject err
     else if response.statusCode isnt 200
@@ -60,4 +80,5 @@ module.exports = (config) ->
   return {
     get: get
     post: post
+    put: put
   }
